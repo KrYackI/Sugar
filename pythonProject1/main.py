@@ -311,9 +311,9 @@ class LabaInterface(QWidget):
             self.result6.setText(res[5])
             ##################################
             # comment if only 6 algorithms
-            self.result7.setText(res[6])
-            self.result8.setText(res[7])
-            self.result9.setText(res[8])
+            # self.result7.setText(res[6])
+            # self.result8.setText(res[7])
+            # self.result9.setText(res[8])
             ##################################
         elif (type == "auto"):
             self.auto_res_count = 1
@@ -351,9 +351,9 @@ class LabaInterface(QWidget):
             self.result6.setText(res[5])
             #################################
             # comment if only 6 algorithms
-            self.result7.setText(res[6])
-            self.result8.setText(res[7])
-            self.result9.setText(res[8])
+            # self.result7.setText(res[6])
+            # self.result8.setText(res[7])
+            # self.result9.setText(res[8])
             #################################
 
             self.result1.show()

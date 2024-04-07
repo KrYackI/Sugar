@@ -100,6 +100,7 @@ def experiment(n, min_start_sugar, max_start_sugar, min_maturation, max_maturati
     return S
 
 def manual(n, matrix):
+    Days = [i + 1 for i in range(n)]
     r1, indices1, res1 = sb.hungarian_min(matrix)
     r2, indices2, res2 = sb.hungarian_max(matrix)
     r3, indices3, res3 = sb.greedy(matrix)
@@ -116,6 +117,41 @@ def manual(n, matrix):
     S.append("Целевая функция Бережливого алгоритма: " + str(r4))
     S.append("Целевая функция Жадно-бережливого алгоритма: " + str(r5))
     S.append("Целевая функция Бережливо-жадного алгоритма: " + str(r6))
+
+    plt.rcParams["figure.figsize"] = 10, 10
+    ax1 = plt.subplot(2, 1, 1)
+    ax2 = plt.subplot(2, 1, 2)
+
+    ax1.set_title("Сравнение алгоритмов")
+    ax1.set_xlabel("Число партий")
+    ax1.set_ylabel("S")
+    ax1.plot(Days, res1, linestyle = '-', color = 'black', label = "Венгерский мин")
+    ax1.plot(Days, res2, linestyle = '-', color = 'purple', label = "Венгерский макс")
+    ax1.plot(Days, res3, linestyle = '-', color = 'green', label = "Жадный")
+    ax1.plot(Days, res4, linestyle = '-', color = 'red', label = "Бережливый")
+    ax1.plot(Days, res5, linestyle = '-', color = 'blue', label = "Жадно-бережливый")
+    ax1.plot(Days, res6, linestyle = '-', color = 'brown', label = "Бережливо-жадный")
+    ax1.legend()
+    # plt.show()
+
+    m2 = [0 for i in range(n)]
+    m1 = [abs(res2[i] - res1[i]) / res1[i] for i in range(n)]
+    m3 = [abs(res2[i] - res3[i]) / res3[i] for i in range(n)]
+    m4 = [abs(res2[i] - res4[i]) / res4[i] for i in range(n)]
+    m5 = [abs(res2[i] - res5[i]) / res5[i] for i in range(n)]
+    m6 = [abs(res2[i] - res6[i]) / res6[i] for i in range(n)]
+
+    ax2.set_title("Сравнение ошибок")
+    ax2.set_xlabel("Число партий")
+    ax2.set_ylabel("Ошибка")
+    ax2.plot(Days, m1, linestyle = '-', color = 'black', label = "Венгерский мин")
+    ax2.plot(Days, m2, linestyle = '-', color = 'purple', label = "Венгерский макс")
+    ax2.plot(Days, m3, linestyle = '-', color = 'green', label = "Жадный")
+    ax2.plot(Days, m4, linestyle = '-', color = 'red', label = "Бережливый")
+    ax2.plot(Days, m5, linestyle = '-', color = 'blue', label = "Жадно-бережливый")
+    ax2.plot(Days, m6, linestyle = '-', color = 'brown', label = "Бережливо-жадный")
+    ax2.legend()
+    plt.show()
 
     return S
 
