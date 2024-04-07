@@ -48,18 +48,27 @@ class LabaInterface(QWidget):
         self.result4 = QLineEdit()
         self.result5 = QLineEdit()
         self.result6 = QLineEdit()
+        self.result7 = QLineEdit()
+        self.result8 = QLineEdit()
+        self.result9 = QLineEdit()
         self.result1.setReadOnly(True)
         self.result2.setReadOnly(True)
         self.result3.setReadOnly(True)
         self.result4.setReadOnly(True)
         self.result5.setReadOnly(True)
         self.result6.setReadOnly(True)
+        self.result7.setReadOnly(True)
+        self.result8.setReadOnly(True)
+        self.result9.setReadOnly(True)
         self.result1.hide()
         self.result2.hide()
         self.result3.hide()
         self.result4.hide()
         self.result5.hide()
         self.result6.hide()
+        self.result7.hide()
+        self.result8.hide()
+        self.result9.hide()
 
         self.sublayout3.addWidget(self.result1, 7, 0, 1, 3)
         self.sublayout3.addWidget(self.result2, 8, 0, 1, 3)
@@ -67,6 +76,9 @@ class LabaInterface(QWidget):
         self.sublayout3.addWidget(self.result4, 10, 0, 1, 3)
         self.sublayout3.addWidget(self.result5, 11, 0, 1, 3)
         self.sublayout3.addWidget(self.result6, 12, 0, 1, 3)
+        self.sublayout3.addWidget(self.result7, 13, 0, 1, 3)
+        self.sublayout3.addWidget(self.result8, 14, 0, 1, 3)
+        self.sublayout3.addWidget(self.result9, 15, 0, 1, 3)
 
 
         self.manual_matrix_input_button = QPushButton("Создать матрицу вручную")
@@ -86,10 +98,6 @@ class LabaInterface(QWidget):
         self.create_manual_count = 0
         self.create_auto_count = 0
 
-        self.graphicsView = PlotWidget()
-        self.sublayout3.addWidget(self.graphicsView, 0, 1)
-        self.graphicsView.hide()
-
     def choose_mode(self):
         self.result1.hide()
         self.result2.hide()
@@ -97,12 +105,18 @@ class LabaInterface(QWidget):
         self.result4.hide()
         self.result5.hide()
         self.result6.hide()
+        self.result7.hide()
+        self.result8.hide()
+        self.result9.hide()
         self.result1.clear()
         self.result2.clear()
         self.result3.clear()
         self.result4.clear()
         self.result5.clear()
         self.result6.clear()
+        self.result7.clear()
+        self.result8.clear()
+        self.result9.clear()
 
         if self.create_manual_count != 0:
             self.manual_matrix_input_button.show()
@@ -283,6 +297,9 @@ class LabaInterface(QWidget):
             self.result4.show()
             self.result5.show()
             self.result6.show()
+            self.result7.show()
+            self.result8.show()
+            self.result9.show()
 
             res = fi.manual(int(self.matrix_size.text()), m)
 
@@ -292,6 +309,12 @@ class LabaInterface(QWidget):
             self.result4.setText(res[3])
             self.result5.setText(res[4])
             self.result6.setText(res[5])
+            ##################################
+            # comment if only 6 algorithms
+            self.result7.setText(res[6])
+            self.result8.setText(res[7])
+            self.result9.setText(res[8])
+            ##################################
         elif (type == "auto"):
             self.auto_res_count = 1
             try:
@@ -313,19 +336,25 @@ class LabaInterface(QWidget):
 
 
 
-            re = fi.experiment(int(self.auto_matrix_size.text()), float(self.min_size1.text()),
+            res = fi.experiment(int(self.auto_matrix_size.text()), float(self.min_size1.text()),
                           float(self.max_size1.text()),
                           float(self.min_size2.text()) + 1.0,
                           float(self.max_size2.text()) + 1.0,
                           float(self.min_size3.text()),
                           float(self.max_size3.text()))
 
-            self.result1.setText(re[0])
-            self.result2.setText(re[1])
-            self.result3.setText(re[2])
-            self.result4.setText(re[3])
-            self.result5.setText(re[4])
-            self.result6.setText(re[5])
+            self.result1.setText(res[0])
+            self.result2.setText(res[1])
+            self.result3.setText(res[2])
+            self.result4.setText(res[3])
+            self.result5.setText(res[4])
+            self.result6.setText(res[5])
+            #################################
+            # comment if only 6 algorithms
+            self.result7.setText(res[6])
+            self.result8.setText(res[7])
+            self.result9.setText(res[8])
+            #################################
 
             self.result1.show()
             self.result2.show()
@@ -333,6 +362,9 @@ class LabaInterface(QWidget):
             self.result4.show()
             self.result5.show()
             self.result6.show()
+            self.result7.show()
+            self.result8.show()
+            self.result9.show()
 
 
 

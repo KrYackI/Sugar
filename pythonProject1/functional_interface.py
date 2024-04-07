@@ -119,4 +119,4 @@ def manual(n, matrix):
 
     return S
 
-experiment(50, 0.2, 0.5, 1.03, 1.2, 0.95, 0.81)
+# experiment(50, 0.2, 0.5, 1.03, 1.2, 0.95, 0.81)
