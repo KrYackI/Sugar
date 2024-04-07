@@ -24,7 +24,7 @@ def rand_p_matrix(size: int, maturation: int, min_start_sugar: float, max_start_
 
 def hungarian_min(p_matrix):
     #Возвращает результат и список-перестановку целевой функции, поиск худшего результата с помощью венгерского алгоритма.
-    col_indices, row_indices = linear_sum_assignment(p_matrix) # Список "row_indices" содержит индексы строк,
+    row_indices, col_indices = linear_sum_assignment(numpy.array(p_matrix).transpose()) # Список "row_indices" содержит индексы строк,
                                                                # а список "col_indices" - индексы столбцов, которые образуют оптимальное назначение.
     result = 0
     summa = [] # S на каждом шаге
@@ -32,9 +32,9 @@ def hungarian_min(p_matrix):
     for i in range(len(row_indices)):
         result += p_matrix[col_indices[i]][row_indices[i]]   # итоговая сумма
         summa.append(result)
-    for i in range(len(row_indices)):
-        col_indices[row_indices[i]] = i
-    return result, row_indices, summa
+    # for i in range(len(row_indices)):
+    #     row_indices[col_indices[i]] = i
+    return result, col_indices, summa
 
 
 def hungarian_max(p_matrix):
@@ -46,7 +46,7 @@ def hungarian_max(p_matrix):
             reverse_p_matrix[i][j] = -1 * p_matrix[i][j] + max_elem # сводим максимизацию к минимизации
                                                                     #(в каждой строке берем максимальный элемент и вычитаем из него все остальные элементы строки)
 
-    col_indices, row_indices = linear_sum_assignment(reverse_p_matrix)
+    row_indices, col_indices = linear_sum_assignment(numpy.array(reverse_p_matrix).transpose())
     result = 0
     summa = []
 
@@ -54,9 +54,9 @@ def hungarian_max(p_matrix):
         result += p_matrix[col_indices[i]][row_indices[i]]
         summa.append(result)
 
-    for i in range(len(row_indices)):
-        col_indices[row_indices[i]] = i
-    return result, row_indices, summa
+    # for i in range(len(row_indices)):
+    #     col_indices[row_indices[i]] = i
+    return result, col_indices, summa
 
 
 def greedy(p_matrix: list):
