@@ -20,12 +20,6 @@ def experiment(n, min_start_sugar, max_start_sugar, min_maturation, max_maturati
     # min_degradation=float(input("введите нижнюю границу значений коэффициентов деградации:\n "))
     # max_degradation=float(input("введите верхнюю границу значений коэффициентов деградации:\n "))
 
-    res1 = []
-    res2 = []
-    res3 = []
-    res4 = []
-    res5 = []
-    res6 = []
     Days = [i + 1 for i in range(n)]
 
     # Вводим стартовые значения и интервалы - получаем матрицу P
@@ -58,25 +52,31 @@ def experiment(n, min_start_sugar, max_start_sugar, min_maturation, max_maturati
 
             #Days.append(i)
 
-    print('\n')
-    print("Целевая функция Венгерского минимума: " + str(r1))
-    print("Целевая функция Венгерского максимума: " + str(r2))
-    print("Целевая функция Жадного алгоритма: " + str(r3))
-    print("Целевая функция Бережливого алгоритма: " + str(r4))
-    print("Целевая функция Жадно-бережливого алгоритма: " + str(r5))
-    print("Целевая функция Бережливо-жадного алгоритма: " + str(r6))
+    S = []
 
-    plt.title("Сравнение алгоритмов")
-    plt.xlabel("Число партий")
-    plt.ylabel("S")
-    plt.plot(Days, res1, linestyle = '-', color = 'black', label = "Венгерский мин")
-    plt.plot(Days, res2, linestyle = '-', color = 'purple', label = "Венгерский макс")
-    plt.plot(Days, res3, linestyle = '-', color = 'green', label = "Жадный")
-    plt.plot(Days, res4, linestyle = '-', color = 'red', label = "Бережливый")
-    plt.plot(Days, res5, linestyle = '-', color = 'blue', label = "Жадно-бережливый")
-    plt.plot(Days, res6, linestyle = '-', color = 'brown', label = "Бережливо-жадный")
-    plt.legend()
-    plt.show()
+    # print('\n')
+    S.append("Целевая функция Венгерского минимума: " + str(r1))
+    S.append("Целевая функция Венгерского максимума: " + str(r2))
+    S.append("Целевая функция Жадного алгоритма: " + str(r3))
+    S.append("Целевая функция Бережливого алгоритма: " + str(r4))
+    S.append("Целевая функция Жадно-бережливого алгоритма: " + str(r5))
+    S.append("Целевая функция Бережливо-жадного алгоритма: " + str(r6))
+
+    plt.rcParams["figure.figsize"] = 10, 10
+    ax1 = plt.subplot(2, 1, 1)
+    ax2 = plt.subplot(2, 1, 2)
+
+    ax1.set_title("Сравнение алгоритмов")
+    ax1.set_xlabel("Число партий")
+    ax1.set_ylabel("S")
+    ax1.plot(Days, res1, linestyle = '-', color = 'black', label = "Венгерский мин")
+    ax1.plot(Days, res2, linestyle = '-', color = 'purple', label = "Венгерский макс")
+    ax1.plot(Days, res3, linestyle = '-', color = 'green', label = "Жадный")
+    ax1.plot(Days, res4, linestyle = '-', color = 'red', label = "Бережливый")
+    ax1.plot(Days, res5, linestyle = '-', color = 'blue', label = "Жадно-бережливый")
+    ax1.plot(Days, res6, linestyle = '-', color = 'brown', label = "Бережливо-жадный")
+    ax1.legend()
+    # plt.show()
 
     m2 = [0 for i in range(n)]
     m1 = [abs(res2[i] - res1[i]) / res1[i] for i in range(n)]
@@ -85,17 +85,19 @@ def experiment(n, min_start_sugar, max_start_sugar, min_maturation, max_maturati
     m5 = [abs(res2[i] - res5[i]) / res5[i] for i in range(n)]
     m6 = [abs(res2[i] - res6[i]) / res6[i] for i in range(n)]
 
-    plt.title("Сравнение ошибок")
-    plt.xlabel("Число партий")
-    plt.ylabel("Ошибка")
-    plt.plot(Days, m1, linestyle = '-', color = 'black', label = "Венгерский мин")
-    plt.plot(Days, m2, linestyle = '-', color = 'purple', label = "Венгерский макс")
-    plt.plot(Days, m3, linestyle = '-', color = 'green', label = "Жадный")
-    plt.plot(Days, m4, linestyle = '-', color = 'red', label = "Бережливый")
-    plt.plot(Days, m5, linestyle = '-', color = 'blue', label = "Жадно-бережливый")
-    plt.plot(Days, m6, linestyle = '-', color = 'brown', label = "Бережливо-жадный")
-    plt.legend()
+    ax2.set_title("Сравнение ошибок")
+    ax2.set_xlabel("Число партий")
+    ax2.set_ylabel("Ошибка")
+    ax2.plot(Days, m1, linestyle = '-', color = 'black', label = "Венгерский мин")
+    ax2.plot(Days, m2, linestyle = '-', color = 'purple', label = "Венгерский макс")
+    ax2.plot(Days, m3, linestyle = '-', color = 'green', label = "Жадный")
+    ax2.plot(Days, m4, linestyle = '-', color = 'red', label = "Бережливый")
+    ax2.plot(Days, m5, linestyle = '-', color = 'blue', label = "Жадно-бережливый")
+    ax2.plot(Days, m6, linestyle = '-', color = 'brown', label = "Бережливо-жадный")
+    ax2.legend()
     plt.show()
+
+    return S
 
 def manual(n, matrix):
     r1, indices1, res1 = sb.hungarian_min(matrix)
@@ -105,15 +107,16 @@ def manual(n, matrix):
     r5, indices5, res5 = sb.greedy_thrifty(matrix, n // 2)
     r6, indices6, res6 = sb.thrifty_greedy(matrix, n // 2)
 
-    print("Целевая функция Венгерского минимума: " + str(r1))
-    print("Целевая функция Венгерского максимума: " + str(r2))
-    print("Целевая функция Жадного алгоритма: " + str(r3))
-    print("Целевая функция Бережливого алгоритма: " + str(r4))
-    print("Целевая функция Жадно-бережливого алгоритма: " + str(r5))
-    print("Целевая функция Бережливо-жадного алгоритма: " + str(r6))
+    S = []
 
-    # print("Венг. мин: ", r1, "\nВенг. макс: ", r2, "\nЖадный: ", r3)
-    print("\nВенг. мин: ", indices1, "\nВенг. макс: ", indices2, "\nЖадный: ", indices3,
-          "\nБережливый: ", indices4, "\nЖадно-бережливый: ", indices5, "\nБережливо-жадный: ", indices6)
+    # print('\n')
+    S.append("Целевая функция Венгерского минимума: " + str(r1))
+    S.append("Целевая функция Венгерского максимума: " + str(r2))
+    S.append("Целевая функция Жадного алгоритма: " + str(r3))
+    S.append("Целевая функция Бережливого алгоритма: " + str(r4))
+    S.append("Целевая функция Жадно-бережливого алгоритма: " + str(r5))
+    S.append("Целевая функция Бережливо-жадного алгоритма: " + str(r6))
 
-experiment(50, 0.4, 0.5, 1.13, 1.17, 0.85, 0.81)
+    return S
+
+experiment(50, 0.2, 0.5, 1.03, 1.2, 0.95, 0.81)
