@@ -50,6 +50,36 @@ def experiment(n, min_start_sugar, max_start_sugar, min_maturation, max_maturati
             # Жадно-бережливый алгоритм
     r6, indices6, res6 = sb.thrifty_greedy(p, n // 2)
 
+    r7, indices7, res7 = sb.TkG(p, n // 2, 1)
+    k = 1
+    for i in range(1, n // 2):
+        r, ind, res = sb.TkG(p, n // 2, i)
+        if (r7 < r):
+            r7 = r
+            indices7 = ind
+            res7 = res
+            k = i
+
+    r8, indices8, res8 = sb.CTG(p, n // 2, 1)
+    k2 = 1
+    for i in range(1, n):
+        r, ind, res = sb.CTG(p, n // 2, i)
+        if (r8 < r):
+            r8 = r
+            indices8 = ind
+            res8 = res
+            k2 = i
+
+    r9, indices9, res9 = sb.Gk(p, n // 2, 1)
+    k3 = 1
+    for i in range(1, n):
+        r, ind, res = sb.Gk(p, n // 2, i)
+        if (r9 < r):
+            r9 = r
+            indices9 = ind
+            res9 = res
+            k3 = i
+
             #Days.append(i)
 
     S = []
@@ -61,6 +91,9 @@ def experiment(n, min_start_sugar, max_start_sugar, min_maturation, max_maturati
     S.append("Целевая функция Бережливого алгоритма: " + str(r4))
     S.append("Целевая функция Жадно-бережливого алгоритма: " + str(r5))
     S.append("Целевая функция Бережливо-жадного алгоритма: " + str(r6))
+    S.append("Целевая функция T(" + str(k) + ")G алгоритма: " + str(r7))
+    S.append("Целевая функция CTG(k=" + str(k) + ") алгоритма: " + str(r8))
+    S.append("Целевая функция Gk(k=" + str(k) + ") алгоритма: " + str(r9))
 
     plt.rcParams["figure.figsize"] = 10, 10
     ax1 = plt.subplot(2, 1, 1)
@@ -75,6 +108,9 @@ def experiment(n, min_start_sugar, max_start_sugar, min_maturation, max_maturati
     ax1.plot(Days, res4, linestyle = '-', color = 'red', label = "Бережливый")
     ax1.plot(Days, res5, linestyle = '-', color = 'blue', label = "Жадно-бережливый")
     ax1.plot(Days, res6, linestyle = '-', color = 'brown', label = "Бережливо-жадный")
+    ax1.plot(Days, res7, linestyle='--', color='grey', label="T(k)G")
+    ax1.plot(Days, res8, linestyle='--', color='green', label="CTG")
+    ax1.plot(Days, res9, linestyle='--', color='red', label="Gk")
     ax1.legend()
     # plt.show()
 
@@ -155,4 +191,4 @@ def manual(n, matrix):
 
     return S
 
-# experiment(50, 0.2, 0.5, 1.03, 1.2, 0.95, 0.81)
+experiment(50, 0.2, 0.5, 1.03, 1.2, 0.95, 0.81)
