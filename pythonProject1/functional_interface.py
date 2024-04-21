@@ -50,9 +50,9 @@ def experiment(n, mu, min_start_sugar, max_start_sugar, min_maturation, max_matu
             # Жадно-бережливый алгоритм
     r6, indices6, res6 = sb.thrifty_greedy(p, mu)
 
-    r7, indices7, res7 = sb.TkG(p, mu, 1)
+    r7, indices7, res7 = sb.TkG(p, mu, 2)
     k = 1
-    for i in range(1, n // 2):
+    for i in range(3, mu):
         r, ind, res = sb.TkG(p, mu, i)
         if (r7 < r):
             r7 = r
@@ -60,9 +60,9 @@ def experiment(n, mu, min_start_sugar, max_start_sugar, min_maturation, max_matu
             res7 = res
             k = i
 
-    r8, indices8, res8 = sb.CTG(p, mu, 1)
+    r8, indices8, res8 = sb.CTG(p, mu, 2)
     k2 = 1
-    for i in range(1, n):
+    for i in range(3, n):
         r, ind, res = sb.CTG(p, mu, i)
         if (r8 < r):
             r8 = r
@@ -70,9 +70,9 @@ def experiment(n, mu, min_start_sugar, max_start_sugar, min_maturation, max_matu
             res8 = res
             k2 = i
 
-    r9, indices9, res9 = sb.Gk(p, mu, 4)
+    r9, indices9, res9 = sb.Gk(p, mu, 2)
     k3 = 1
-    for i in range(1, n):
+    for i in range(3, n):
         r, ind, res = sb.Gk(p, mu, i)
         if (r9 < r):
             r9 = r
