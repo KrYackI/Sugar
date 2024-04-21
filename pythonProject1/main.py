@@ -1,234 +1,371 @@
+import csv
+
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication, QTableWidget, QPushButton, \
-    QLineEdit, QVBoxLayout, QMessageBox
+    QLineEdit, QVBoxLayout, QMessageBox, QFileDialog
 from PyQt5.QtGui import QLinearGradient, QColor
 import functional_interface as fi
-
-def dialog_window(text: str):
-    dlg = QMessageBox()
-    dlg.setInformativeText(text)
-    dlg.setStyleSheet("QLabel{ color: gray}")
-    dlg.exec()
+from pyqtgraph import PlotWidget, PlotItem, LegendItem, mkPen
+import os
 
 
-class LabaInterface(QWidget):
-    def __init__(self):
-        super().__init__()
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(1600, 900)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
 
-        self.setWindowTitle("Full Screen Window")
-        self.resize(1480, 960)
-        # self.showFullScreen()
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.centralwidget)
+        self.gridLayout_2.setObjectName("gridLayout_2")
 
-        self.setStyleSheet("background-color: white;")
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
+        self.gridLayout.setObjectName("gridLayout")
 
-        # Устанавливаем белый цвет текста для всех элементов
-        QApplication.instance().setStyleSheet("QLabel{ color : black; }"
-                                              "QPushButton { color : black; }"
-                                              "QLineEdit { color : black; }"
-                                              "QTableWidget { color : black; }")
+        self.graphicsView = PlotWidget(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.graphicsView.sizePolicy().hasHeightForWidth())
+        self.graphicsView.setSizePolicy(sizePolicy)
+        self.graphicsView.setObjectName("graphicsView")
+        self.graphicsView.getPlotItem().showGrid(x=True, y=True, alpha=0.9)
+        self.graphicsView.getPlotItem().setLabel(axis='left', text='Sugar value', pen='b')
+        self.graphicsView.getPlotItem().setLabel(axis='bottom', text='Days', pen='b')
+        self.graphicsView.getPlotItem().setTitle(title="Algorithms comparison")
+        self.graphicsView.setBackground('w')
+        self.gridLayout.addWidget(self.graphicsView, 2, 1, 5, 2)
 
-        gradient = QLinearGradient(0, 0, 0, self.height())  # Создаем градиент
-        gradient.setColorAt(1, QColor(255, 255, 255))
-        gradient.setColorAt(0, QColor(255, 255, 255))
-        self.gradient = gradient
+        self.gridLayout_3 = QtWidgets.QGridLayout()
+        self.gridLayout_3.setObjectName("gridLayout_3")
 
-        self.first_winodow()
+        self.spinBox = QtWidgets.QSpinBox(self.centralwidget)
+        self.spinBox.setMaximum(999)
+        self.spinBox.setObjectName("spinBox")
+        self.gridLayout_3.addWidget(self.spinBox, 1, 0, 1, 1)
 
-    def first_winodow(self):
-        main_layout = QVBoxLayout()
-        self.setLayout(main_layout)
 
-        self.sublayout1 = QGridLayout()
-        self.sublayout3 = QGridLayout()
-        main_layout.addLayout(self.sublayout1, 0)
-        main_layout.addLayout(self.sublayout3, 1)
+        self.spinBox_2 = QtWidgets.QSpinBox(self.centralwidget)
+        self.spinBox_2.setMaximum(999)
+        self.spinBox_2.setObjectName("spinBox_2")
+        self.gridLayout_3.addWidget(self.spinBox_2, 1, 1, 1, 1)
 
-        self.result1 = QLineEdit()
-        self.result2 = QLineEdit()
-        self.result3 = QLineEdit()
-        self.result4 = QLineEdit()
-        self.result5 = QLineEdit()
-        self.result6 = QLineEdit()
-        self.result7 = QLineEdit()
-        self.result8 = QLineEdit()
-        self.result9 = QLineEdit()
-        self.result1.setReadOnly(True)
-        self.result2.setReadOnly(True)
-        self.result3.setReadOnly(True)
-        self.result4.setReadOnly(True)
-        self.result5.setReadOnly(True)
-        self.result6.setReadOnly(True)
-        self.result7.setReadOnly(True)
-        self.result8.setReadOnly(True)
-        self.result9.setReadOnly(True)
+        self.label_n = QtWidgets.QLabel(self.centralwidget)
+        self.label_n.setAutoFillBackground(False)
+        self.label_n.setScaledContents(False)
+        self.label_n.setWordWrap(True)
+        self.label_n.setObjectName("label_n")
+        self.gridLayout_3.addWidget(self.label_n, 0, 0, 1, 1)
+
+        self.label_m = QtWidgets.QLabel(self.centralwidget)
+        self.label_m.setAutoFillBackground(False)
+        self.label_m.setScaledContents(False)
+        self.label_m.setWordWrap(True)
+        self.label_m.setObjectName("label_m")
+        self.gridLayout_3.addWidget(self.label_m, 0, 1, 1, 1)
+
+        self.param_1 = QtWidgets.QLabel(self.centralwidget)
+        self.param_1.setWordWrap(True)
+        self.param_1.setObjectName("param_1")
+        self.gridLayout_3.addWidget(self.param_1, 2, 0, 1, 1)
+
+        self.param_2 = QtWidgets.QLabel(self.centralwidget)
+        self.param_2.setWordWrap(True)
+        self.param_2.setObjectName("param_2")
+        self.gridLayout_3.addWidget(self.param_2, 2, 1, 1, 1)
+
+        self.param_3 = QtWidgets.QLabel(self.centralwidget)
+        self.param_3.setWordWrap(True)
+        self.param_3.setObjectName("param_3")
+        self.gridLayout_3.addWidget(self.param_3, 4, 0, 1, 1)
+
+        self.param_4 = QtWidgets.QLabel(self.centralwidget)
+        self.param_4.setWordWrap(True)
+        self.param_4.setObjectName("param_4")
+        self.gridLayout_3.addWidget(self.param_4, 4, 1, 1, 1)
+
+        self.param_5 = QtWidgets.QLabel(self.centralwidget)
+        self.param_5.setWordWrap(True)
+        self.param_5.setObjectName("param_5")
+        self.gridLayout_3.addWidget(self.param_5, 6, 0, 1, 1)
+
+        self.param_6 = QtWidgets.QLabel(self.centralwidget)
+        self.param_6.setWordWrap(True)
+        self.param_6.setObjectName("param_6")
+        self.gridLayout_3.addWidget(self.param_6, 6, 1, 1, 1)
+
+        self.min_size1 = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.min_size1.setAccelerated(False)
+        self.min_size1.setMinimum(0.01)
+        self.min_size1.setMaximum(1.0)
+        self.min_size1.setSingleStep(0.01)
+        self.min_size1.setObjectName("min_size1")
+        self.gridLayout_3.addWidget(self.min_size1, 3, 0, 1, 1)
+
+        self.max_size1 = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.max_size1.setMinimum(0.01)
+        self.max_size1.setMaximum(1.0)
+        self.max_size1.setSingleStep(0.01)
+        self.max_size1.setObjectName("max_size1")
+        self.gridLayout_3.addWidget(self.max_size1, 3, 1, 1, 1)
+
+        self.min_size2 = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.min_size2.setMinimum(1.0)
+        self.min_size2.setMaximum(3.0)
+        self.min_size2.setSingleStep(0.01)
+        self.min_size2.setObjectName("min_size2")
+        self.gridLayout_3.addWidget(self.min_size2, 5, 0, 1, 1)
+
+        self.max_size2 = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.max_size2.setMinimum(1.0)
+        self.max_size2.setMaximum(3.0)
+        self.max_size2.setSingleStep(0.01)
+        self.max_size2.setObjectName("max_size2")
+        self.gridLayout_3.addWidget(self.max_size2, 5, 1, 1, 1)
+
+        self.min_size3 = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.min_size3.setMinimum(0.01)
+        self.min_size3.setMaximum(1.0)
+        self.min_size3.setSingleStep(0.01)
+        self.min_size3.setObjectName("min_size3")
+        self.gridLayout_3.addWidget(self.min_size3, 7, 0, 1, 1)
+
+        self.max_size3 = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.max_size3.setMinimum(0.01)
+        self.max_size3.setMaximum(1.0)
+        self.max_size3.setSingleStep(0.01)
+        self.max_size3.setObjectName("max_size3")
+        self.gridLayout_3.addWidget(self.max_size3, 7, 1, 1, 1)
+
+
+        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.clicked.connect(lambda: self.result("auto"))
+        self.gridLayout_3.addWidget(self.pushButton_2, 8, 0, 2, 2)
+
+        self.create_matrix_button = QtWidgets.QPushButton(self.centralwidget)
+        self.create_matrix_button.setObjectName("pushButton_3")
+        self.create_matrix_button.clicked.connect(lambda: self.create_matrix(self.spinBox.value()))
+        self.gridLayout_3.addWidget(self.create_matrix_button, 3, 0, 1, 2)
+        self.create_matrix_button.hide()
+
+        self.manual_result_button = QtWidgets.QPushButton(self.centralwidget)
+        self.manual_result_button.setObjectName("pushButton_4")
+        self.manual_result_button.clicked.connect(lambda: self.result("manual"))
+        self.gridLayout_3.addWidget(self.manual_result_button, 5, 0, 2, 2)
+        self.manual_result_button.hide()
+
+
+        self.gridLayout.addLayout(self.gridLayout_3, 2, 0, 3, 1)
+
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        self.result1 = QtWidgets.QLabel(self.centralwidget)
+        self.result1.setObjectName("result1")
         self.result1.hide()
+        self.verticalLayout.addWidget(self.result1)
+
+        self.result2 = QtWidgets.QLabel(self.centralwidget)
+        self.result2.setObjectName("result2")
         self.result2.hide()
+        self.verticalLayout.addWidget(self.result2)
+
+        self.result3 = QtWidgets.QLabel(self.centralwidget)
+        self.result3.setObjectName("result3")
         self.result3.hide()
+        self.verticalLayout.addWidget(self.result3)
+
+        self.result4 = QtWidgets.QLabel(self.centralwidget)
+        self.result4.setObjectName("result4")
         self.result4.hide()
+        self.verticalLayout.addWidget(self.result4)
+
+        self.result5 = QtWidgets.QLabel(self.centralwidget)
+        self.result5.setObjectName("result5")
         self.result5.hide()
+        self.verticalLayout.addWidget(self.result5)
+
+        self.result6 = QtWidgets.QLabel(self.centralwidget)
+        self.result6.setObjectName("result6")
         self.result6.hide()
+        self.verticalLayout.addWidget(self.result6)
+
+        self.result7 = QtWidgets.QLabel(self.centralwidget)
+        self.result7.setObjectName("result6")
         self.result7.hide()
+        self.verticalLayout.addWidget(self.result7)
+
+        self.result8 = QtWidgets.QLabel(self.centralwidget)
+        self.result8.setObjectName("result6")
         self.result8.hide()
+        self.verticalLayout.addWidget(self.result8)
+
+        self.result9 = QtWidgets.QLabel(self.centralwidget)
+        self.result9.setObjectName("result6")
         self.result9.hide()
+        self.verticalLayout.addWidget(self.result9)
 
-        self.sublayout3.addWidget(self.result1, 7, 0, 1, 3)
-        self.sublayout3.addWidget(self.result2, 8, 0, 1, 3)
-        self.sublayout3.addWidget(self.result3, 9, 0, 1, 3)
-        self.sublayout3.addWidget(self.result4, 10, 0, 1, 3)
-        self.sublayout3.addWidget(self.result5, 11, 0, 1, 3)
-        self.sublayout3.addWidget(self.result6, 12, 0, 1, 3)
-        self.sublayout3.addWidget(self.result7, 13, 0, 1, 3)
-        self.sublayout3.addWidget(self.result8, 14, 0, 1, 3)
-        self.sublayout3.addWidget(self.result9, 15, 0, 1, 3)
+        self.gridLayout.addLayout(self.verticalLayout, 5, 0, 2, 1)
+        self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
+        MainWindow.setCentralWidget(self.centralwidget)
 
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
+        self.menubar.setObjectName("menubar")
 
-        self.manual_matrix_input_button = QPushButton("Создать матрицу вручную")
-        self.auto_matrix_input_button = QPushButton("Создать матрицу по ограничениям")
-        self.choose_mode_button = QPushButton("Вернуться к выбору режима")
+        self.menuMode = QtWidgets.QMenu(self.menubar)
+        self.menuMode.setObjectName("menuMode")
 
-        self.sublayout1.addWidget(self.manual_matrix_input_button, 0, 0)
-        self.sublayout1.addWidget(self.auto_matrix_input_button, 0, 1)
-        self.sublayout1.addWidget(self.choose_mode_button, 1, 0, 1, 2)
+        self.menufile = QtWidgets.QMenu(self.menubar)
+        self.menufile.setObjectName("menufile")
+        MainWindow.setMenuBar(self.menubar)
+
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.actionManual = QtWidgets.QAction(MainWindow)
+        self.actionManual.setObjectName("actionManual")
+        self.actionManual.triggered.connect(self.manual_matrix_input)
+
+        self.actionExperiment = QtWidgets.QAction(MainWindow)
+        self.actionExperiment.setObjectName("actionExperiment")
+        self.actionExperiment.triggered.connect(self.auto_matrix_input)
+
+        self.actionSave = QtWidgets.QAction(MainWindow)
+        self.actionSave.setObjectName("actionSave")
+        self.actionSave.triggered.connect(self.save_results)
+
+        self.actionLoad = QtWidgets.QAction(MainWindow)
+        self.actionLoad.setObjectName("actionLoad")
+
+        self.menuMode.addAction(self.actionManual)
+        self.menuMode.addAction(self.actionExperiment)
+        self.menufile.addAction(self.actionSave)
+        self.menubar.addAction(self.menufile.menuAction())
+        self.menubar.addAction(self.menuMode.menuAction())
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         self.matrix_count = 0
-        self.manual_matrix_input_button.clicked.connect(self.manual_matrix_input)
-        self.auto_matrix_input_button.clicked.connect(self.auto_matrix_input)  # <- лямбда функция в параметре
-        self.choose_mode_button.hide()
-        self.choose_mode_button.clicked.connect(lambda: self.choose_mode())
-
         self.create_manual_count = 0
         self.create_auto_count = 0
-
-    def choose_mode(self):
-        self.result1.hide()
-        self.result2.hide()
-        self.result3.hide()
-        self.result4.hide()
-        self.result5.hide()
-        self.result6.hide()
-        self.result7.hide()
-        self.result8.hide()
-        self.result9.hide()
-        self.result1.clear()
-        self.result2.clear()
-        self.result3.clear()
-        self.result4.clear()
-        self.result5.clear()
-        self.result6.clear()
-        self.result7.clear()
-        self.result8.clear()
-        self.result9.clear()
-
-        if self.create_manual_count != 0:
-            self.manual_matrix_input_button.show()
-            self.auto_matrix_input_button.show()
-            self.choose_mode_button.hide()
-
-            self.matrix_size.hide()
-            self.matrix_size.clear()
-            self.create_matrix_button.hide()
-            self.matrix_name.hide()
-
-            if self.matrix_count != 0:
-                self.matrix.hide()
-                self.matrix.clear()
-                self.manual_result_button.hide()
-
-
-
-            self.create_manual_count = 0
-            self.manual_res_count = 0
-            self.create_auto_count = 0
-            self.auto_res_count = 0
-
-
-
-        elif self.create_auto_count != 0:
-            self.manual_matrix_input_button.show()
-            self.auto_matrix_input_button.show()
-            self.choose_mode_button.hide()
-
-            self.first_string_name.hide()
-
-            self.second_string_name.hide()
-
-            self.auto_matrix_size.hide()
-
-
-            self.min_size1.hide()
-            self.max_size1.hide()
-            self.min_size2.hide()
-            self.max_size2.hide()
-            self.min_size3.hide()
-            self.max_size3.hide()
-            self.auto_result_button.hide()
-
-            self.create_manual_count = 0
-            self.manual_res_count = 0
-            self.create_auto_count = 0
-            self.auto_res_count = 0
-
-    def auto_matrix_input(self):
-        self.manual_matrix_input_button.hide()
-        self.auto_matrix_input_button.hide()
-        self.choose_mode_button.show()
-
-        self.create_auto_count = 1
+        self.manual_res_count = 0
         self.auto_res_count = 0
-
-
-        self.first_string_name = QLineEdit("Введите размер матрицы")
-        self.first_string_name.setReadOnly(True)
-        self.second_string_name = QLineEdit("Введите ограничения параметров")
-        self.second_string_name.setReadOnly(True)
-        self.auto_matrix_size = QLineEdit()
-        self.min_size1 = QLineEdit()
-        self.max_size1 = QLineEdit()
-        self.min_size2 = QLineEdit()
-        self.max_size2 = QLineEdit()
-        self.min_size3 = QLineEdit()
-        self.max_size3 = QLineEdit()
-
-        self.auto_result_button = QPushButton("Решить")
-        self.auto_result_button.clicked.connect(lambda: self.result("auto"))
-
-        self.sublayout3.addWidget(self.first_string_name, 0, 0, 1, 1)
-        self.sublayout3.addWidget(self.auto_matrix_size, 1, 0)
-        self.sublayout3.addWidget(self.second_string_name, 2, 0, 1, 2)
-        self.sublayout3.addWidget(self.min_size1, 3, 0)
-        self.sublayout3.addWidget( self.max_size1, 3, 1)
-        self.sublayout3.addWidget(self.min_size2, 4, 0)
-        self.sublayout3.addWidget( self.max_size2, 4, 1)
-        self.sublayout3.addWidget(self.min_size3, 5, 0)
-        self.sublayout3.addWidget( self.max_size3, 5, 1)
-        self.sublayout3.addWidget(self.auto_result_button, 6, 0, 1, 2)
-
-
-
-
-
+        self.mode = 0
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label_n.setText(_translate("MainWindow", "Введите число партий"))
+        self.label_m.setText(_translate("MainWindow", "Введите число дней дозаривания"))
+        self.param_5.setText(_translate("MainWindow", "Мин. коэфф. деградации"))
+        self.param_6.setText(_translate("MainWindow", "Макс. коэфф. деградации"))
+        self.param_3.setText(_translate("MainWindow", "Мин. коэфф. дозаривания"))
+        self.param_4.setText(_translate("MainWindow", "Макс. коэфф. дозаривания"))
+        self.param_1.setText(_translate("MainWindow", "Мин. стартовая величина"))
+        self.param_2.setText(_translate("MainWindow", "Макс. стартовая величина"))
+        self.pushButton_2.setText(_translate("MainWindow", "Провести эксперимент"))
+        self.create_matrix_button.setText(_translate("MainWindow", "Создать матрицу"))
+        self.manual_result_button.setText(_translate("MainWindow", "Решить"))
+        self.result1.setText(_translate("MainWindow", "TextLabel"))
+        self.result2.setText(_translate("MainWindow", "TextLabel"))
+        self.result3.setText(_translate("MainWindow", "TextLabel"))
+        self.result4.setText(_translate("MainWindow", "TextLabel"))
+        self.result5.setText(_translate("MainWindow", "TextLabel"))
+        self.result6.setText(_translate("MainWindow", "TextLabel"))
+        self.result7.setText(_translate("MainWindow", "TextLabel"))
+        self.result8.setText(_translate("MainWindow", "TextLabel"))
+        self.result9.setText(_translate("MainWindow", "TextLabel"))
+        self.menuMode.setTitle(_translate("MainWindow", "Mode"))
+        self.menufile.setTitle(_translate("MainWindow", "File"))
+        self.actionManual.setText(_translate("MainWindow", "Manual"))
+        self.actionExperiment.setText(_translate("MainWindow", "Experiment"))
+        self.actionSave.setText(_translate("MainWindow", "Save"))
+        self.actionLoad.setText(_translate("MainWindow", "Load"))
+    
+    ''' input modes '''
     def manual_matrix_input(self):
-        self.manual_matrix_input_button.hide()
-        self.auto_matrix_input_button.hide()
-        self.choose_mode_button.show()
 
+        self.mode = 1
         self.create_manual_count = 1
         self.manual_res_count = 0
 
-        self.matrix_name = QLineEdit()
-        self.matrix_name.setText("Введите размеры матрицы")
-        self.matrix_name.setReadOnly(True)
-        self.matrix_size = QLineEdit()
+        self.graphicsView.clear()
+        # self.spinBox.clear()
 
-        self. create_matrix_button = QPushButton("Создать")
-        self.create_matrix_button.clicked.connect(lambda: self.create_matrix(self.matrix_size))
+        self.create_matrix_button.show()
 
-        self.sublayout3.addWidget(self.matrix_name, 0, 0, 1, 3)
-        self.sublayout3.addWidget(self.matrix_size, 1, 0)
-        self.sublayout3.addWidget(self.create_matrix_button, 1, 2)
+        # self.label_m.hide()
+        # self.spinBox_2.hide()
+        self.param_1.hide()
+        self.param_2.hide()
+        self.param_3.hide()
+        self.param_4.hide()
+        self.param_5.hide()
+        self.param_6.hide()
+        self.min_size1.hide()
+        self.min_size2.hide()
+        self.min_size3.hide()
+        self.max_size1.hide()
+        self.max_size2.hide()
+        self.max_size3.hide()
+        self.pushButton_2.hide()
+        self.result1.hide()
+        self.result2.hide()
+        self.result3.hide()
+        self.result4.hide()
+        self.result5.hide()
+        self.result6.hide()
+        self.result7.hide()
+        self.result8.hide()
+        self.result9.hide()
+        
+    def auto_matrix_input(self):
 
+        self.mode = 0
+        self.create_auto_count = 1
+        self.auto_res_count = 0
+
+        self.graphicsView.clear()
+
+        self.create_matrix_button.hide()
+        if (self.matrix_count == 1):
+            self.matrix.hide()
+        self.manual_result_button.hide()
+        self.result1.hide()
+        self.result2.hide()
+        self.result3.hide()
+        self.result4.hide()
+        self.result5.hide()
+        self.result6.hide()
+        self.result7.hide()
+        self.result8.hide()
+        self.result9.hide()
+
+        self.label_m.show()
+        self.spinBox_2.show()
+        self.param_1.show()
+        self.param_2.show()
+        self.param_3.show()
+        self.param_4.show()
+        self.param_5.show()
+        self.param_6.show()
+        self.min_size1.show()
+        self.min_size2.show()
+        self.min_size3.show()
+        self.max_size1.show()
+        self.max_size2.show()
+        self.max_size3.show()
+        self.pushButton_2.show()
+
+    ''' end of input modes '''
+    
     def create_matrix(self, size):
         try:
-            self.int_valid([self.matrix_size.text()], 0)
+            self.int_valid([size], 0)
         except Exception as ex:
             info_msg = QMessageBox()
             info_msg.setWindowTitle('Ввод матрицы')
@@ -245,28 +382,24 @@ class LabaInterface(QWidget):
 
         self.matrix.show()
 
-        self.matrix.setRowCount(int(size.text()))
-        self.matrix.setColumnCount(int(size.text()))
+        self.matrix.setRowCount(size)
+        self.matrix.setColumnCount(size)
         self.matrix.resizeRowsToContents()
 
 
-        self.matrix.setMaximumSize(self.matrix.columnCount() * self.matrix.columnWidth(int(size.text()) - 1) + 2, self.matrix.rowCount() * self.matrix.rowHeight(int(size.text()) - 1) + 4)
-        self.sublayout3.addWidget(self.matrix, 2, 0, 1, 3)
+        self.matrix.setMaximumSize(self.matrix.columnCount() * self.matrix.columnWidth(size - 1) + 2, self.matrix.rowCount() * self.matrix.rowHeight(size - 1) + 2)
+        self.gridLayout_3.addWidget(self.matrix, 4, 0, 1, 2)
 
-        if not hasattr(self, 'manual_result_button'):
-            self.manual_result_button = QPushButton("Решить")
-            self.manual_result_button.clicked.connect(lambda: self.result("manual"))
-
-            self.sublayout3.addWidget(self.manual_result_button, 3, 0, 1, 3)
         self.manual_result_button.show()
 
     def result(self, type):
+        self.graphicsView.clear()
         if type == "manual":
             try:
                 m = []
-                for i in range(int(self.matrix_size.text())):
+                for i in range(self.spinBox.value()):
                     vector = []
-                    for j in range(int(self.matrix_size.text())):
+                    for j in range(self.spinBox.value()):
                         vector.append(self.matrix.item(i, j).text())
                     m.append(vector)
             except:
@@ -278,6 +411,7 @@ class LabaInterface(QWidget):
                 return
 
             try:
+                self.int_valid([self.spinBox.value(), self.spinBox_2.value()], 2)
                 self.float_valid([k for v in m for k in v], 0)
 
             except Exception as ex:
@@ -287,8 +421,8 @@ class LabaInterface(QWidget):
                 info_msg.setIcon(QMessageBox.Icon.Critical)
                 info_msg.exec()
                 return
-            for i in range(int(self.matrix_size.text())):
-                for j in range(int(self.matrix_size.text())):
+            for i in range(self.spinBox.value()):
+                for j in range(self.spinBox.value()):
                     m[i][j] = float(m[i][j])
             self.manual_res_count = 1
             self.result1.show()
@@ -301,7 +435,9 @@ class LabaInterface(QWidget):
             self.result8.show()
             self.result9.show()
 
-            res = fi.manual(int(self.matrix_size.text()), m)
+            res, plots = fi.manual(self.spinBox.value(), self.spinBox_2.value(), m)
+
+            self.draw(plots)
 
             self.result1.setText(res[0])
             self.result2.setText(res[1])
@@ -311,20 +447,20 @@ class LabaInterface(QWidget):
             self.result6.setText(res[5])
             ##################################
             # comment if only 6 algorithms
-            # self.result7.setText(res[6])
-            # self.result8.setText(res[7])
-            # self.result9.setText(res[8])
+            self.result7.setText(res[6])
+            self.result8.setText(res[7])
+            self.result9.setText(res[8])
             ##################################
         elif (type == "auto"):
             self.auto_res_count = 1
             try:
-                self.int_valid([self.auto_matrix_size.text()], 0) # поменять на 1
-                self.float_valid([self.min_size1.text(),
-                                  self.max_size1.text(),
-                                  self.min_size2.text(),
-                                  self.max_size2.text(),
-                                  self.min_size3.text(),
-                                  self.max_size3.text()], 1)
+                self.int_valid([self.spinBox.value(), self.spinBox_2.value()], 2)
+                self.float_valid([self.min_size1.value(),
+                                  self.max_size1.value(),
+                                  self.min_size2.value(),
+                                  self.max_size2.value(),
+                                  self.min_size3.value(),
+                                  self.max_size3.value()], 1)
 
             except Exception as ex:
                 info_msg = QMessageBox()
@@ -336,12 +472,14 @@ class LabaInterface(QWidget):
 
 
 
-            res = fi.experiment(int(self.auto_matrix_size.text()), float(self.min_size1.text()),
-                          float(self.max_size1.text()),
-                          float(self.min_size2.text()) + 1.0,
-                          float(self.max_size2.text()) + 1.0,
-                          float(self.min_size3.text()),
-                          float(self.max_size3.text()))
+            res, plots = fi.experiment(self.spinBox.value(), self.spinBox_2.value(), self.min_size1.value(),
+                                                          self.max_size1.value(),
+                                                          self.min_size2.value(),
+                                                          self.max_size2.value(),
+                                                          self.min_size3.value(),
+                                                          self.max_size3.value())
+
+            self.draw(plots)
 
             self.result1.setText(res[0])
             self.result2.setText(res[1])
@@ -351,9 +489,9 @@ class LabaInterface(QWidget):
             self.result6.setText(res[5])
             #################################
             # comment if only 6 algorithms
-            # self.result7.setText(res[6])
-            # self.result8.setText(res[7])
-            # self.result9.setText(res[8])
+            self.result7.setText(res[6])
+            self.result8.setText(res[7])
+            self.result9.setText(res[8])
             #################################
 
             self.result1.show()
@@ -366,58 +504,109 @@ class LabaInterface(QWidget):
             self.result8.show()
             self.result9.show()
 
-
+    ''' validations '''
 
     def float_valid(self, floatList, flag):
-        for param in floatList:
-            try:
-                float(param)
-            except ValueError:
-                raise Exception("Параметры должны быть числовыми значениями")
-            if (float(param) <= 0):
-                raise Exception("Параметры должны быть больше нуля")
         if (flag):
             for i in range(len(floatList) // 2):
-                if (float(floatList[2 * i]) >= 1.0 or float(floatList[2 * i + 1]) >= 1.0):
-                    raise Exception("Параметры должны быть меньше единицы")
                 if (float(floatList[2 * i]) > float(floatList[2 * i + 1])):
                     raise Exception("Минимальное значение параметра должно быть не больше максимального")
         return True
 
     def int_valid(self, intList, flag):
-        try:
-            int(intList[0])
-        except ValueError:
-            raise Exception("Размер матрицы должен быть целочисленным")
-        if (int(intList[0]) <= 0):
+        if (intList[0] <= 0):
             raise Exception("Размер матрицы должен быть больше нуля")
-        if (flag):
-            try:
-                int(intList[1])
-            except ValueError:
-                raise Exception("Число экспериментов должно быть целочисленным")
-            if (int(intList[1]) <= 0):
-                raise Exception("Число экспериментов должно быть больше нуля")
+        if (not flag and int(intList[0]) >= 10):
+            raise Exception("Размер матрицы должен быть небольшим")
+        if (flag==2):
+            if (intList[1] > intList[0]):
+                raise Exception("Число дней дозаривания должно быть меньше общего числа партий")
         return True
 
-    def paintEvent(self, event):
-        self.setStyleSheet("border: 1px solid;"
-                           "border-color : black;"
-                           "font-size: 26px;")
+    ''' end of validations '''
 
 
-    # def show_graph(self, summa):
-    #     x = [i + 1 for i in range(len(summa[0]))]
-    #     chart = Canvas(self, x, summa)
+    ''' drawing '''
+    def draw(self, plots):
+        Days = [i + 1 for i in range(len(plots[0]))]
+        names = ["Hungarian min", "Hungarian max", "Greedy", "Thrifty", "Greedy-thrifty", "Thrifty-greedy", "T(k)G", "CTG", "G(k)"]
+        legend = self.graphicsView.getPlotItem().addLegend()
+        for i in range(len(plots)):
+            item = self.graphicsView.plot(Days, plots[i], pen=mkPen((i, len(plots)), width=3))
+            legend.addItem(item=item, name=names[i])
+    ''' end of drawing '''
 
 
-if __name__ == '__main__':
-    try:
-        app = QApplication([])
-        app.setStyle("Windows")
-        windows = LabaInterface()
+    ''' save/load data '''
+    def save_results(self):
+        if self.mode==1:
+            path=QFileDialog.getSaveFileName( caption='save CSV', filter='CSV(*.csv)')
+            if path[0] != '':
+                with open(path[0], 'w', newline='') as csv_file:
+                    writer=csv.writer(csv_file, delimiter=';', lineterminator='\r')
+                    for row in range(self.spinBox.value()):
+                        row_data=[]
+                        for column in range(self.spinBox.value()):
+                            item=self.matrix.item(row, column)
+                            if item is not None:
+                                row_data.append(float(item.text()))
+                            else:
+                                row_data.append(' ')
+                        writer.writerow(row_data)
+                    writer.writerow([''])
 
-        windows.show()
-        app.exec()
-    except Exception as r:
-        dialog_window(f"Ошибка: {type(r).__name__} - {r}")
+                    if self.manual_res_count:
+                        writer.writerow([self.result1.text()[:self.result1.text().find(':') + 1], self.result1.text()[self.result1.text().find(':') + 2:]])
+                        writer.writerow([self.result2.text()[:self.result2.text().find(':') + 1], self.result2.text()[self.result2.text().find(':') + 2:]])
+                        writer.writerow([self.result3.text()[:self.result3.text().find(':') + 1], self.result3.text()[self.result3.text().find(':') + 2:]])
+                        writer.writerow([self.result4.text()[:self.result4.text().find(':') + 1], self.result4.text()[self.result4.text().find(':') + 2:]])
+                        writer.writerow([self.result5.text()[:self.result5.text().find(':') + 1], self.result5.text()[self.result5.text().find(':') + 2:]])
+                        writer.writerow([self.result6.text()[:self.result6.text().find(':') + 1], self.result6.text()[self.result6.text().find(':') + 2:]])
+                        writer.writerow([self.result7.text()[:self.result7.text().find(':') + 1],
+                                         self.result7.text()[self.result7.text().find(':') + 2:]])
+                        writer.writerow([self.result8.text()[:self.result8.text().find(':') + 1],
+                                         self.result8.text()[self.result8.text().find(':') + 2:]])
+                        writer.writerow([self.result9.text()[:self.result9.text().find(':') + 1],
+                                         self.result9.text()[self.result9.text().find(':') + 2:]])
+        if self.mode==0:
+            path=QFileDialog.getSaveFileName( caption='save CSV', filter='CSV(*.csv)')
+            if path[0] != '':
+                with open(path[0], 'w', newline='') as csv_file:
+                    writer=csv.writer(csv_file, delimiter=';', lineterminator='\r')
+                    writer.writerow(["Число партий", "Число дней дозаривания"])
+                    writer.writerow([self.spinBox.value(), self.spinBox_2.value()])
+                    writer.writerow([''])
+                    writer.writerow([self.param_1.text(), self.param_2.text()])
+                    writer.writerow([self.min_size1.value(), self.max_size1.value()])
+                    writer.writerow([self.param_3.text(), self.param_4.text()])
+                    writer.writerow([self.min_size2.value(), self.max_size2.value()])
+                    writer.writerow([self.param_5.text(), self.param_6.text()])
+                    writer.writerow([self.min_size3.value(), self.max_size3.value()])
+                    writer.writerow([''])
+
+                    if self.auto_res_count:
+                        writer.writerow([self.result1.text()[:self.result1.text().find(':') + 1], self.result1.text()[self.result1.text().find(':') + 2:]])
+                        writer.writerow([self.result2.text()[:self.result2.text().find(':') + 1], self.result2.text()[self.result2.text().find(':') + 2:]])
+                        writer.writerow([self.result3.text()[:self.result3.text().find(':') + 1], self.result3.text()[self.result3.text().find(':') + 2:]])
+                        writer.writerow([self.result4.text()[:self.result4.text().find(':') + 1], self.result4.text()[self.result4.text().find(':') + 2:]])
+                        writer.writerow([self.result5.text()[:self.result5.text().find(':') + 1], self.result5.text()[self.result5.text().find(':') + 2:]])
+                        writer.writerow([self.result6.text()[:self.result6.text().find(':') + 1], self.result6.text()[self.result6.text().find(':') + 2:]])
+                        writer.writerow([self.result7.text()[:self.result7.text().find(':') + 1],
+                                         self.result7.text()[self.result7.text().find(':') + 2:]])
+                        writer.writerow([self.result8.text()[:self.result8.text().find(':') + 1],
+                                         self.result8.text()[self.result8.text().find(':') + 2:]])
+                        writer.writerow([self.result9.text()[:self.result9.text().find(':') + 1],
+                                         self.result9.text()[self.result9.text().find(':') + 2:]])
+
+
+    ''' end of save/load data '''
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

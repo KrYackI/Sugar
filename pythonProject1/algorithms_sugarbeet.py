@@ -310,33 +310,32 @@ def CTG(p_matrix: list, saving_steps: int,  k: int):
 
 def Gk(p_matrix: list, saving_steps: int,  k: int):
     result = 0
+    n = len(p_matrix)
     indices = []
     took = []
     summa = []
-    summa.append(0)
-    n = len(p_matrix)
-    for j in range(n // k): # идем по столбцам
-        col_max = 0
-        col_max_index: int
-        tmp = [0 for i in range(n)]
-        for i in range(n): # по строкам данного столбца
-            is_took = False
+    tmp = []
+    ts=[]
+    for j in range(len(p_matrix)): # идем по столбцам
+        if j % k == 0:
+            tmp = [0 for i in range(n)]
+            col_max = 0
+            col_max_index: int
+            for i in range(len(p_matrix)): # по строкам данного столбца
+                is_took = False
 
-            for l in range(len(took)):
-                if took[l] == i:
-                    is_took = True
-                    break
+                for l in range(len(took)):
+                    if took[l] == i:
+                        is_took = True
+                        break
 
-            if is_took: # если такой элемент уже брали, то переходим к следующему
-                continue
+                if is_took: # если такой элемент уже брали, то переходим к следующему
+                    continue
 
-            tmp[i] = p_matrix[i][j * k]
-
-        ts = sorted(tmp, reverse=True)
-        for i in range(min(k, n - j * k)):
-            summa.append(summa[max(j * k + i - 1, 0)] + p_matrix[i][j])
-            indices.append(tmp.index(ts[i]))
-            took.append(tmp.index(ts[i]))
-        result = summa[min(n, j * k) - 1]
-    summa.pop(0)
+                tmp[i] = p_matrix[i][j]
+            ts = sorted(tmp, reverse=True)
+        result += p_matrix[tmp.index(ts[j % k])][j]
+        summa.append(result)
+        indices.append(tmp.index(ts[j % k]))
+        took.append(tmp.index(ts[j % k]))
     return result, indices, summa
