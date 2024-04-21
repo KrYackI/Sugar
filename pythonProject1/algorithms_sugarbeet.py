@@ -1,5 +1,5 @@
 import tools
-import numpy
+import numpy as np
 from scipy.optimize import linear_sum_assignment
 from random import uniform
 import time
@@ -24,7 +24,7 @@ def rand_p_matrix(size: int, maturation: int, min_start_sugar: float, max_start_
 
 def hungarian_min(p_matrix):
     #Возвращает результат и список-перестановку целевой функции, поиск худшего результата с помощью венгерского алгоритма.
-    row_indices, col_indices = linear_sum_assignment(numpy.array(p_matrix).transpose()) # Список "row_indices" содержит индексы строк,
+    row_indices, col_indices = linear_sum_assignment(np.array(p_matrix).transpose()) # Список "row_indices" содержит индексы строк,
                                                                # а список "col_indices" - индексы столбцов, которые образуют оптимальное назначение.
     result = 0
     summa = [] # S на каждом шаге
@@ -39,14 +39,14 @@ def hungarian_min(p_matrix):
 
 def hungarian_max(p_matrix):
     #Возвращает результат и список-перестановку целевой функции, поиск лучшего результата с помощью венгерского алгоритма.
-    reverse_p_matrix = numpy.copy(p_matrix) #обратная матрица
+    reverse_p_matrix = np.copy(p_matrix) #обратная матрица
     for i in range(len(p_matrix)):
-        max_elem = numpy.max(p_matrix[i])
+        max_elem = np.max(p_matrix[i])
         for j in range(len(p_matrix)):
             reverse_p_matrix[i][j] = -1 * p_matrix[i][j] + max_elem # сводим максимизацию к минимизации
                                                                     #(в каждой строке берем максимальный элемент и вычитаем из него все остальные элементы строки)
 
-    row_indices, col_indices = linear_sum_assignment(numpy.array(reverse_p_matrix).transpose())
+    row_indices, col_indices = linear_sum_assignment(np.array(reverse_p_matrix).transpose())
     result = 0
     summa = []
 
@@ -237,3 +237,105 @@ def greedy_thrifty(p_matrix: list, greedy_steps: int):
 
 
 
+def TkG(p_matrix: list, saving_steps: int,  k: int):
+    result = 0
+    indices = []
+    took = []
+    summa = []
+    saving_steps_completed = 0
+    n = len(p_matrix)
+    for j in range(n):
+
+        col_min = 10
+        col_min_index: int
+
+        col_max = 0
+        col_max_index: int
+        saving = False
+
+        tmp = [0 for i in range(n)]
+
+        if saving_steps_completed < saving_steps:
+            saving = True
+
+        for i in range(len(p_matrix)):
+            is_took = False
+
+            for l in range(len(took)):
+                if took[l] == i:
+                    is_took = True
+                    break
+
+            if is_took:
+                continue
+
+            tmp[i] = p_matrix[i][j]
+
+        ts = sorted(tmp)
+
+        if saving:
+            r = ts[min(k, n - j) - 1 + len(took)]
+            result += r
+            summa.append(result)
+            indices.append(tmp.index(r))
+            took.append(tmp.index(r))
+
+        else:
+            result += ts[n - 1]
+            summa.append(result)
+            indices.append(tmp.index(ts[n - 1]))
+            took.append(tmp.index(ts[n - 1]))
+
+        saving_steps_completed += 1
+
+    return result, indices, summa
+
+def CTG(p_matrix: list, saving_steps: int,  k: int):
+    def gamma(k: int):
+        if (1<=k<=mu-1):
+            return n-2*mu+2*k+1
+        elif (mu<=k<=2*mu-1):
+            return n+2*mu-2*k
+        else:
+            return n-k+1
+    n = len(p_matrix)
+    mu = saving_steps
+    indices = [0 for i in range(n)]
+    summa = [0 for i in range(n)]
+    for i in range(n):
+        indices[gamma(i+1)-1] = i
+        summa[i] = (summa[max(i-1, 0)] + p_matrix[gamma(i + 1) - 1][i])
+    result = summa[n - 1]
+    return result, indices, summa
+
+def Gk(p_matrix: list, saving_steps: int,  k: int):
+    result = 0
+    n = len(p_matrix)
+    indices = []
+    took = []
+    summa = []
+    tmp = []
+    ts=[]
+    for j in range(len(p_matrix)): # идем по столбцам
+        if j % k == 0:
+            tmp = [0 for i in range(n)]
+            col_max = 0
+            col_max_index: int
+            for i in range(len(p_matrix)): # по строкам данного столбца
+                is_took = False
+
+                for l in range(len(took)):
+                    if took[l] == i:
+                        is_took = True
+                        break
+
+                if is_took: # если такой элемент уже брали, то переходим к следующему
+                    continue
+
+                tmp[i] = p_matrix[i][j]
+            ts = sorted(tmp, reverse=True)
+        result += p_matrix[tmp.index(ts[j % k])][j]
+        summa.append(result)
+        indices.append(tmp.index(ts[j % k]))
+        took.append(tmp.index(ts[j % k]))
+    return result, indices, summa
