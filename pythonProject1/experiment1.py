@@ -1,9 +1,12 @@
+import csv
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication, QTableWidget, QPushButton, \
     QLineEdit, QVBoxLayout, QMessageBox, QFileDialog
 from PyQt5.QtGui import QLinearGradient, QColor
 import functional_interface as fi
 from pyqtgraph import PlotWidget, PlotItem, LegendItem
+import os
 
 
 class Ui_MainWindow(object):
@@ -217,6 +220,7 @@ class Ui_MainWindow(object):
 
         self.actionSave = QtWidgets.QAction(MainWindow)
         self.actionSave.setObjectName("actionSave")
+        self.actionSave.triggered.connect(self.save_results)
 
         self.actionLoad = QtWidgets.QAction(MainWindow)
         self.actionLoad.setObjectName("actionLoad")
@@ -233,10 +237,13 @@ class Ui_MainWindow(object):
         self.matrix_count = 0
         self.create_manual_count = 0
         self.create_auto_count = 0
+        self.manual_res_count = 0
+        self.auto_res_count = 0
+        self.mode = 0
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.label_n.setText(_translate("MainWindow", "Введите размер матрицы"))
+        self.label_n.setText(_translate("MainWindow", "Введите число партий"))
         self.label_m.setText(_translate("MainWindow", "Введите число дней дозаривания"))
         self.param_5.setText(_translate("MainWindow", "Мин. коэфф. деградации"))
         self.param_6.setText(_translate("MainWindow", "Макс. коэфф. деградации"))
@@ -263,6 +270,7 @@ class Ui_MainWindow(object):
     ''' input modes '''
     def manual_matrix_input(self):
 
+        self.mode = 1
         self.create_manual_count = 1
         self.manual_res_count = 0
 
@@ -295,6 +303,7 @@ class Ui_MainWindow(object):
         
     def auto_matrix_input(self):
 
+        self.mode = 0
         self.create_auto_count = 1
         self.auto_res_count = 0
 
@@ -354,7 +363,7 @@ class Ui_MainWindow(object):
 
 
         self.matrix.setMaximumSize(self.matrix.columnCount() * self.matrix.columnWidth(size - 1) + 2, self.matrix.rowCount() * self.matrix.rowHeight(size - 1) + 2)
-        self.gridLayout_3.addWidget(self.matrix, 2, 0, 1, 3)
+        self.gridLayout_3.addWidget(self.matrix, 2, 0, 1, 2)
 
         self.manual_result_button.show()
 
@@ -485,7 +494,7 @@ class Ui_MainWindow(object):
             raise Exception("Размер матрицы должен быть небольшим")
         if (flag==2):
             if (intList[1] <= intList[0]):
-                raise Exception("Число экспериментов должно быть меньше общего числа дней")
+                raise Exception("Число экспериментов должно быть меньше общего числа партий")
         return True
 
     ''' end of validations '''
@@ -500,6 +509,59 @@ class Ui_MainWindow(object):
             item = self.graphicsView.plot(Days, plots[i], pen=(i, len(plots)))
             legend.addItem(item=item, name=names[i])
     ''' end of drawing '''
+
+
+    ''' save/load data '''
+    def save_results(self):
+        if self.mode==1:
+            path=QFileDialog.getSaveFileName( caption='save CSV', filter='CSV(*.csv)')
+            if path[0] != '':
+                with open(path[0], 'w', newline='') as csv_file:
+                    writer=csv.writer(csv_file, delimiter=';', lineterminator='\r')
+                    for row in range(self.spinBox.value()):
+                        row_data=[]
+                        for column in range(self.spinBox.value()):
+                            item=self.matrix.item(row, column)
+                            if item is not None:
+                                row_data.append(float(item.text()))
+                            else:
+                                row_data.append(' ')
+                        writer.writerow(row_data)
+                    writer.writerow([''])
+
+                    if self.manual_res_count:
+                        writer.writerow([self.result1.text()[:self.result1.text().find(':') + 1], self.result1.text()[self.result1.text().find(':') + 2:]])
+                        writer.writerow([self.result2.text()[:self.result2.text().find(':') + 1], self.result2.text()[self.result2.text().find(':') + 2:]])
+                        writer.writerow([self.result3.text()[:self.result3.text().find(':') + 1], self.result3.text()[self.result3.text().find(':') + 2:]])
+                        writer.writerow([self.result4.text()[:self.result4.text().find(':') + 1], self.result4.text()[self.result4.text().find(':') + 2:]])
+                        writer.writerow([self.result5.text()[:self.result5.text().find(':') + 1], self.result5.text()[self.result5.text().find(':') + 2:]])
+                        writer.writerow([self.result6.text()[:self.result6.text().find(':') + 1], self.result6.text()[self.result6.text().find(':') + 2:]])
+        if self.mode==0:
+            path=QFileDialog.getSaveFileName( caption='save CSV', filter='CSV(*.csv)')
+            if path[0] != '':
+                with open(path[0], 'w', newline='') as csv_file:
+                    writer=csv.writer(csv_file, delimiter=';', lineterminator='\r')
+                    writer.writerow(["Число партий", "Число дней дозаривания"])
+                    writer.writerow([self.spinBox.value(), self.spinBox_2.value()])
+                    writer.writerow([''])
+                    writer.writerow([self.param_1.text(), self.param_2.text()])
+                    writer.writerow([self.min_size1.value(), self.max_size1.value()])
+                    writer.writerow([self.param_3.text(), self.param_4.text()])
+                    writer.writerow([self.min_size2.value(), self.max_size2.value()])
+                    writer.writerow([self.param_5.text(), self.param_6.text()])
+                    writer.writerow([self.min_size3.value(), self.max_size3.value()])
+                    writer.writerow([''])
+
+                    if self.auto_res_count:
+                        writer.writerow([self.result1.text()[:self.result1.text().find(':') + 1], self.result1.text()[self.result1.text().find(':') + 2:]])
+                        writer.writerow([self.result2.text()[:self.result2.text().find(':') + 1], self.result2.text()[self.result2.text().find(':') + 2:]])
+                        writer.writerow([self.result3.text()[:self.result3.text().find(':') + 1], self.result3.text()[self.result3.text().find(':') + 2:]])
+                        writer.writerow([self.result4.text()[:self.result4.text().find(':') + 1], self.result4.text()[self.result4.text().find(':') + 2:]])
+                        writer.writerow([self.result5.text()[:self.result5.text().find(':') + 1], self.result5.text()[self.result5.text().find(':') + 2:]])
+                        writer.writerow([self.result6.text()[:self.result6.text().find(':') + 1], self.result6.text()[self.result6.text().find(':') + 2:]])
+
+
+    ''' end of save/load data '''
 
 
 if __name__ == "__main__":
